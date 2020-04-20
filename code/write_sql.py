@@ -10,7 +10,7 @@
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
-import time
+import time,datetime
 
 
 class Write_Sql:
@@ -61,37 +61,58 @@ class Write_Sql:
         for column in df.columns:
             print('字段---------' + column + '-----开始清洗--')
             df[column] = df[column].apply(lambda x: str(x).replace("\t", ""))
+            df[column] = df[column].apply(lambda x: str(x).replace(" ", ""))
         print('数据清洗完成......')
 
         return df
+        
+    def main(self,paths,db_name,table_name):
+        """
+        :param paths :数据路径
+        :param db_name:数据库名
+        :param table_name: 目标表名
+        :return: 
+        """
+        #write_sql = self.Write_Sql()
+        # 连接数据库引擎
+        print('数据库初始化......')
+        t1 = datetime.datetime.now()
+
+        engine = self.get_con_sql('root', '521521', '127.0.0.1:3306', db_name, 'utf8')
+        for path in paths:
+        
+            # 读取数据
+            df = self.get_data(path)
+            # 获取数据库中的已有表
+            table_list = [i[0] for i in engine.execute('show tables')]
+            print('数据库中已有表:' + str(len(table_list)) + '个')
+          
+            print('已有表:'+','.join((tab_name) for tab_name in table_list))
+            # 数据库引擎连接
+            con = engine.connect()
+            print('数据开始写入数据库......')
+            if table_name in table_list:
+            # 如果表存在,则添加,不存在,则创建添加
+                df.to_sql(table_name, con=con, if_exists='append', index=False)
+            else:
+                df.to_sql(table_name, con=con, if_exists='replace', index=False)
+            
+        t2 = datetime.datetime.now()
+        print('开始时间:-------')
+        print(t1)
+        print('结束时间:-------')
+        print(t2)
+        print('总共耗时:' + str((t2 - t1).seconds))
+        con.close()
+        print('数据写入完成,关闭连接!!!')
+        
+ 
 
 
 if __name__ == '__main__':
     # 路径
-    path = '/home/zhu/Desktop/资金交易明细20200416183139_1.csv'
+    
+    paths = ['c:/users/jxh/desktop/wuxi_1.csv']
     write_sql = Write_Sql()
-    # 连接数据库引擎
-    print('数据库初始化......')
-    engine = write_sql.get_con_sql('root', '521521', '127.0.0.1:3306', 'sxzy', 'utf8')
-    # 读取数据
-    df = write_sql.get_data(path)
-    # 获取数据库中的已有表
-    table_list = [i[0] for i in engine.execute('show tables')]
-    print('数据库中已有表:' + str(len(table_list)) + '个')
-    for tab_name in table_list:
-        print('已有表:'+tab_name)
-    # 数据库引擎连接
-    con = engine.connect()
-    print('数据开始写入数据库')
-    t1 = time.clock()
-    print('开始时间为:' + str(t1))
-    if 'gs_df' in table_list:
-    # 如果表存在,则添加,不存在,则创建添加
-        df.to_sql('gs_df', con=con, if_exists='append', index=False)
-    else:
-        df.to_sql('gs_df', con=con, if_exists='replace', index=False)
-    t2 = time.clock()
-    print('结束时间于:' + str(t2), '   总共耗时:' + str(t2 - t1))
-    con.close()
-    print('关闭连接!!!')
-    # /home/zhu/PycharmProjects/zhongke_project
+
+    write_sql.main(paths,'test','test12')
