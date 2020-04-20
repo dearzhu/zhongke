@@ -43,7 +43,7 @@ class Write_Sql:
         # 读取数据
         print('开始读取数据......')
 
-        df = pd.read_csv(path, encoding='gbk')
+        df = pd.read_csv(path, encoding='gb18030')
         print('开始选择目标字段.....')
         select_col = ['\t交易卡号', '\t交易账号', '\t交易方户名', '\t交易方证件号', '\t交易账户开户银行', '\t交易时间',
                       '\t交易金额', '\t交易余额', '\t交易币种', '\t借贷标志', '\t对手账号', '\t对手户名', '\t对手证件号',
@@ -112,7 +112,7 @@ class Write_Sql:
 if __name__ == '__main__':
     # 路径
     
-    paths = ['c:/users/jxh/desktop/wuxi_1.csv']
+    paths = [r'c:/users/jxh/desktop/资金交易明细20200420192134_1.csv']
     write_sql = Write_Sql()
 
-    write_sql.main(paths,'test','test12')
+    write_sql.main(paths,'sxzy','gas_bank_records')
