@@ -43,7 +43,7 @@ class Write_Sql:
         # 读取数据
         print('开始读取数据......')
 
-        df = pd.read_csv(path, encoding='gb18030')
+        df = pd.read_csv(path, encoding='gb18030',dtype=object)
         print('开始选择目标字段.....')
         select_col = ['\t交易卡号', '\t交易账号', '\t交易方户名', '\t交易方证件号', '\t交易账户开户银行', '\t交易时间',
                       '\t交易金额', '\t交易余额', '\t交易币种', '\t借贷标志', '\t对手账号', '\t对手户名', '\t对手证件号',
@@ -59,9 +59,14 @@ class Write_Sql:
         # 删除每个字段的回车符
         print('数据开始清洗......')
         for column in df.columns:
-            print('字段---------' + column + '-----开始清洗--')
-            df[column] = df[column].apply(lambda x: str(x).replace("\t", ""))
-            df[column] = df[column].apply(lambda x: str(x).replace(" ", ""))
+            if column!='jysj':
+                print('字段---------' + column + '-----开始清洗--')
+                df[column] = df[column].apply(lambda x: str(x).replace("\t", ""))
+                df[column] = df[column].apply(lambda x: str(x).replace(" ", ""))
+            else:
+                df[column] = df[column].apply(lambda x: str(x).replace("\t", ""))
+
+            
         print('数据清洗完成......')
 
         return df
@@ -116,7 +121,7 @@ class Write_Sql:
 if __name__ == '__main__':
     # 路径
     
-    paths = [r'c:/users/jxh/desktop/资金交易明细20200421154754_1.csv']
+    paths = [r'C:/Users/jxh/Desktop/资金交易明细20200422163015_1.csv']
     write_sql = Write_Sql()
 
-    write_sql.main(paths,'test','gas_bank_records')
+    write_sql.main(paths,'sxzy','gas_bank_records')
