@@ -97,9 +97,9 @@ class Write_Sql:
             con = engine.connect()
             print('数据开始写入数据库......')
             # 分批输入数据，防止数据过多，引起进程被kill
-            for i in range(0,np.int(df.shape[0]/100000)+1):
-                print('第---{}----分区采集,总共---{}---区'.format(str(i),str(np.int(df.shape[0]/100000)+1)))
-                df1=df[i*100000:(i+1)*100000]
+            for i in range(0,np.int(df.shape[0]/10000)+1):
+                print('第---{}----分区采集,总共---{}---区'.format(str(i),str(np.int(df.shape[0]/10000)+1)))
+                df1=df[i*10000:(i+1)*10000]
                 if table_name in table_list:
                 # 如果表存在,则添加,不存在,则创建添加
                     df1.to_sql(table_name, con=con, if_exists='append', index=False)
@@ -121,7 +121,7 @@ class Write_Sql:
 if __name__ == '__main__':
     # 路径
     
-    paths = [r'C:/Users/jxh/Desktop/资金交易明细20200422163015_1.csv']
+    paths = ['/home/zhu/Desktop/资金交易明细20200421154754_1.csv','/home/zhu/Desktop/资金交易明细20200421154754_2.csv','/home/zhu/Desktop/资金交易明细20200422163015_1.csv']
     write_sql = Write_Sql()
 
     write_sql.main(paths,'sxzy','gas_bank_records')
