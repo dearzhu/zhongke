@@ -91,12 +91,16 @@ class Write_Sql:
             # 数据库引擎连接
             con = engine.connect()
             print('数据开始写入数据库......')
-            if table_name in table_list:
-            # 如果表存在,则添加,不存在,则创建添加
-                df.to_sql(table_name, con=con, if_exists='append', index=False)
-            else:
-                df.to_sql(table_name, con=con, if_exists='replace', index=False)
-            
+            # 分批输入数据，防止数据过多，引起进程被kill
+            for i in range(0,np.int(df.shape[0]/100000)+1):
+                print('第---{}----分区采集,总共---{}---区'.format(str(i),str(np.int(df.shape[0]/100000)+1)))
+                df1=df[i*100000:(i+1)*100000]
+                if table_name in table_list:
+                # 如果表存在,则添加,不存在,则创建添加
+                    df1.to_sql(table_name, con=con, if_exists='append', index=False)
+                else:
+                    df1.to_sql(table_name, con=con, if_exists='replace', index=False)
+
         t2 = datetime.datetime.now()
         print('开始时间:-------')
         print(t1)
@@ -112,7 +116,7 @@ class Write_Sql:
 if __name__ == '__main__':
     # 路径
     
-    paths = [r'c:/users/jxh/desktop/资金交易明细20200420192134_1.csv']
+    paths = [r'c:/users/jxh/desktop/资金交易明细20200421154754_1.csv']
     write_sql = Write_Sql()
 
-    write_sql.main(paths,'sxzy','gas_bank_records')
+    write_sql.main(paths,'test','gas_bank_records')
